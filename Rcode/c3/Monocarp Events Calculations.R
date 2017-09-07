@@ -8,10 +8,13 @@ library(parallel)
 set.seed(53241986)
 
 ## Working directory must be set here, so the source()'s below run
-root=ifelse(.Platform$OS.type=="windows","c:/repos","~/repos"); # modify as needed
-mainDir<-paste0(root,"/ipm_book/Rcode/c3")
-setwd(mainDir); 
+# root=ifelse(.Platform$OS.type=="windows","c:/repos","~/repos") # modify as needed
+# mainDir<-paste0(root,"/ipm_book/Rcode/c3")
+# setwd(mainDir)
 
+# Create a Rstudio project in ".". All that is left is to set working directory in corresponding
+# chapter folders. This is the case for Chapter 3.
+setwd("./Rcode/c3")
 source("../c2/Monocarp Demog Funs.R");
 source("../utilities/Standard Graphical Pars.R");
 
@@ -26,8 +29,8 @@ source("../c2/Monocarp Simulate IBM.R")
 cat(pop.size.t,"\n"); 
 
 ## trim an initial transient off the simulation
-sim.data <- sim.data[sim.data$yr > 10,];
-sim.data$yr <- sim.data$yr-10;
+sim.data <- sim.data[sim.data$yr > 10,]
+sim.data$yr <- sim.data$yr-10
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Section 1 - Construct IPM kernels; assumes the IBM has been run and results stored in sim.data 
@@ -50,25 +53,25 @@ cat("Growth rate: IPM ",lambda0,"  sim ",lambda.hat, "\n")
 ## IPM kernels for the calculations 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # to keep close to the formulae in the text next we define the F and P iteration matricies
-P <- IPM.true$P;  F <- IPM.true$F;
+P <- IPM.true$P;  F <- IPM.true$F
 
 # Fundamental operator 
-N <- solve(diag(nBigMatrix)-P); 
+N <- solve(diag(nBigMatrix)-P);
 
 # Compute R0 as dominant eigenvalue of FN
 R <- F %*% N
 R0 <- abs(eigen(R)$values[1])
-cat("R0=",R0,"\n");
+cat("R0=",R0,"\n")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #  Some useful vectors 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Define a probability distribution for offspring sizes
-offspring.prob <- h*c_0z1(meshpts,m.par.true); 
-sum(offspring.prob); # should be 1, and it is. 
+offspring.prob <- h*c_0z1(meshpts,m.par.true)
+sum(offspring.prob) # should be 1, and it is. 
 
 #Define the e vector which we will use for summing down columns
-e=matrix(1,nrow=1,ncol=dim(P)[1])
+e <- matrix(1,nrow=1,ncol=dim(P)[1])
 
 # With mixing at birth, we can calculate R0 directly as the 
 # mean per-capita lifetime fecundity across a birth cohort
@@ -103,7 +106,7 @@ cat(round(s_z(meshpts,m.par.true)*(1-p_bz(meshpts,m.par.true)),4)[1:10],"\n");
 la <- rep(NA,20)
 
 # We can calculate la[1], survival to age 1, as
-la[1] <- sum((e %*% P)*offspring.prob);
+la[1] <- sum((e %*% P)*offspring.prob)
 
 #Later survivorships require P^a so let's do the calculation recursively
 Pa <- P
